@@ -72,19 +72,13 @@ object ListTest extends App {
 //  println(list.isEmpty)
   println(list.toString)
 
-  println(list.map(new Function1[Int, Int] {
-    override def apply(elem: Int): Int = elem * 2
-  }).toString)
+  println(list.map(_ * 2).toString)
 
-  println(list.filter(new Function1[Int, Boolean] {
-    override def apply(elem: Int): Boolean = elem % 2 == 0
-  }).toString)
+  println(list.filter(_ % 2 == 0).toString)
 
   println(list ++ anotherList)
 
-  println(list.flatMap(new Function1[Int, MyList[Int]] {
-    override def apply(elem: Int): MyList[Int] = new Cons(elem, new Cons(elem + 1, Empty))
-  }).toString)
+  println(list.flatMap((elem: Int) => new Cons(elem, new Cons(elem + 1, Empty))).toString)
 
   println(list == cloneList)
 
