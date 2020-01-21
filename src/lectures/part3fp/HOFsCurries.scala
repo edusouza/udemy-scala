@@ -29,5 +29,16 @@ object HOFsCurries extends App {
   println(plus10(1))
 
   // curried functions
-  +
+  val superAdder: (Int) => (Int => Int) = (x: Int) => (y: Int) => x + y
+  val add3 = superAdder(3)
+  println(add3(10))
+  println(superAdder(3)(10))
+
+  def curriedFormat(c: String)(x: Double): String = c.format(x)
+
+  val standardFormat: (Double => String) = curriedFormat("%4.2f")
+  val preciseFormat: (Double => String) = curriedFormat("%10.8f")
+
+  println(standardFormat(Math.PI))
+  println(preciseFormat(Math.PI))
 }
