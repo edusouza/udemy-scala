@@ -22,6 +22,12 @@ abstract class MyList[+A] {
   def filter(predicate: A => Boolean): MyList[A]
 
   def ++[B >: A] (list: MyList[B]):  MyList[B]
+
+  // hofs
+  def foreach(f: A => Unit): Unit
+  def sort(compare: (A, A) => Int): MyList[A]
+  def zipWith[B, C](list: MyList[B], zip: (A, B) => C): MyList[C]
+  def fold[B](start: B)(operator: (B, A) => B): B
 }
 
 case object Empty extends MyList[Nothing] {
@@ -36,6 +42,18 @@ case object Empty extends MyList[Nothing] {
   def filter(predicate: Nothing => Boolean): MyList[Nothing] = Empty
 
   def ++[B >: Nothing](list: MyList[B]): MyList[B] = list
+
+  //hofs
+  def foreach(f: Nothing => Unit): Unit = ()
+
+  def sort(compare: (Nothing, Nothing) => Int): MyList[Nothing] = Empty
+
+  def zipWith[B, C](list: MyList[B], zip: (Nothing, B) => C): MyList[C] = {
+    if (!list.isEmpty) throw new RuntimeException("Lists do not have same length")
+    else Empty
+  }
+
+  def fold[B](start: B)(operator: (B, Nothing) => B): B = start
 }
 
 case class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
@@ -60,12 +78,39 @@ case class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
     else t.filter(predicate)
 
   def ++[B >: A] (list: MyList[B]):  MyList[B] = new Cons(h, t ++ list)
+
+  def foreach(f: A => Unit): Unit = {
+    f(h)
+    t.foreach(f)
+  }
+
+  def sort(compare: (A, A) => Int): MyList[A] = {
+
+    def insert(x: A, sorteList: MyList[A]): MyList[A] = {
+      if (sorteList.isEmpty) new Cons(x, Empty)
+      else if (compare(x, sorteList.head) <= 0) new Cons(x, sorteList)
+      else new Cons(sorteList.head, insert(x, sorteList.tail))
+    }
+
+    val sortedTail = t.sort(compare)
+    insert(h, sortedTail)
+
+  }
+
+  def zipWith[B, C](list: MyList[B], zip: (A, B) => C): MyList[C] = {
+    if (list.isEmpty) throw new RuntimeException("Lists do not have the same length")
+    else new Cons(zip(h, list.head), t.zipWith(list.tail, zip))
+  }
+
+  def fold[B](start: B)(operator: (B, A) => B): B =
+    t.fold(operator(start, h))(operator)
 }
 
 object ListTest extends App {
-  val list = new Cons(1, new Cons(2, new Cons(3, Empty)))
+  val list: MyList[Int] = new Cons(1, new Cons(2, new Cons(3, Empty)))
   val cloneList = new Cons(1, new Cons(2, new Cons(3, Empty)))
-  val anotherList = new Cons(4, new Cons(5, Empty))
+  val anotherList: MyList[Int] = new Cons(4, new Cons(5, Empty))
+  val listOfStrings: MyList[String] = new Cons("Hello", new Cons("Scala", Empty))
 
 //  println(list.tail.head)
 //  println(list.add(4).head)
@@ -81,5 +126,15 @@ object ListTest extends App {
   println(list.flatMap((elem: Int) => new Cons(elem, new Cons(elem + 1, Empty))).toString)
 
   println(list == cloneList)
+
+  list.foreach(println)
+
+  println(list.sort((x, y) => y - x))
+
+  println(anotherList.zipWith[String, String](listOfStrings, _ + "-" + _))
+
+  println(list.fold(0)(_ + _))
+
+  println(listOfStrings.fold("")(_+_))
 
 }

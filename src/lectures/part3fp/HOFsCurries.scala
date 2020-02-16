@@ -46,7 +46,7 @@ object HOFsCurries extends App {
   /*
       1. Expand MyList
         - foreach method A => Unit
-        [1, 2, 3].foreach(x => println(x)
+        [1, 2, 3].foreach(x => println(x))
 
         - sort method ((A,A) => Int) => MyList
         [1, 2, 3].sort((x,y) => y - x) => [3,2,1]
