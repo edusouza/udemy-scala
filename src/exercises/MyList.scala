@@ -108,7 +108,7 @@ case class Cons[+A](h: A, t: MyList[A]) extends MyList[A] {
 
 object ListTest extends App {
   val list: MyList[Int] = new Cons(1, new Cons(2, new Cons(3, Empty)))
-  val cloneList = new Cons(1, new Cons(2, new Cons(3, Empty)))
+  val cloneList: MyList[Int] = Cons(1, new Cons(2, new Cons(3, Empty)))
   val anotherList: MyList[Int] = new Cons(4, new Cons(5, Empty))
   val listOfStrings: MyList[String] = new Cons("Hello", new Cons("Scala", Empty))
 
@@ -136,5 +136,13 @@ object ListTest extends App {
   println(list.fold(0)(_ + _))
 
   println(listOfStrings.fold("")(_+_))
+
+  println(list.flatMap(x => listOfStrings.map(s => s + "-" + x)))
+
+  val combinations = for {
+    n <- list
+    x <- listOfStrings
+  } yield n + "-" + x
+  println(combinations)
 
 }
