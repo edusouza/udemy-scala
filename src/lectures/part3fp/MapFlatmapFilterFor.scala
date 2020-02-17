@@ -28,4 +28,23 @@ object MapFlatmapFilterFor extends App {
   val combinations = numbers.flatMap(n => chars.flatMap(c => colors.map(color =>  "" + c + n + "-" + color)))
   println(combinations)
 
+  numbers.foreach(println)
+
+  // for-comprehensions
+  val forCombinations = for {
+    n <- numbers if n % 2 == 0
+    c <- chars
+    color <- colors
+  } yield "" + c + n + "-" + color
+  println(forCombinations)
+
+  for {
+    n <- numbers
+  } println(n)
+
+  // syntax overload
+  numbers.map { x =>
+    x * 2
+  }
+
 }
